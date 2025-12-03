@@ -1,0 +1,17 @@
+@startuml
+!include components/C4_Container.puml
+TITLE Container Diagram for URL Shortening Service
+
+Person(user, "User", "User who wants to shorten URLs")
+
+System_Boundary(urlShortenerSystem, "URL Shortener System") {
+    Container(api, "URL Shortening Backend", "Handles URL shortening and redirection", "Java + Spring Boot")
+    ContainerDb(database, "Database", "Stores URL mappings (short → original)", "PostgreSQL")
+}
+
+user -left-> api : POST /short-links
+user -left-> api : GET /{shortCode}
+
+api --> database : JPA / Hibernate
+
+@enduml

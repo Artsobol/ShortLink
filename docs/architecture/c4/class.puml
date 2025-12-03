@@ -1,0 +1,35 @@
+@startuml
+title Class Diagram for URL Shortening Service
+
+class ShortLink {
+    - id: Long
+    - shortCode: String
+    - originalUrl: String
+    - createdAt: ZonedDateTime
+}
+
+class ShortLinkController {
+    + createShortLink(originalUrl: String): ResponseEntity<ShortLinkResponse>
+    + redirectToOriginal(shortCode: String): ResponseEntity<Void>
+}
+
+class ShortLinkService {
+    + createShortLink(originalUrl: String): ShortLink
+    + getOriginalUrl(shortCode: String): String
+}
+
+class ShortCodeGenerator {
+    + generateShortCode(): String
+}
+
+interface ShortLinkRepository {
+    + save(shortLink: ShortLink): ShortLink
+    + findByShortCode(shortCode: String): Optional<ShortLink>
+    + findByOriginalUrl(originalUrl: String): Optional<ShortLink>
+}
+
+ShortLinkController --> ShortLinkService
+ShortLinkService --> ShortCodeGenerator
+ShortLinkService --> ShortLinkRepository
+
+@enduml

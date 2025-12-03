@@ -1,0 +1,12 @@
+@startuml
+!include components/C4_Context.puml
+TITLE Context Diagram for URL Shortening Service
+
+Person(user, "User", "User who wants to shorten URLs")
+System(urlShortenerSystem, "URL Shortener System", "A system that provides URL shortening services")
+SystemDb(database, "Database", "Stores original and shortened URLs")
+
+user -left-> urlShortenerSystem : POST /short-links
+user -right-> urlShortenerSystem : GET /{shortCode}
+urlShortenerSystem --> database : Store and retrieve mappings
+@enduml

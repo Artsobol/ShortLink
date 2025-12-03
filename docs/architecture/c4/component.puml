@@ -1,0 +1,24 @@
+@startuml
+!include /components/C4_Component.puml
+skinparam ArrowFontColor #000000ff 
+
+TITLE Component Diagram for URL Shortening Service
+
+Person(user, "User", "User who uses short URLs")
+ContainerDb(database, "Database", "PostgreSQL", "Stores URL mappings (short → original)")
+
+Container(api, "URL Shortening Backend", "Java + Spring Boot", "Handles URL shortening and redirection") {
+    Component(controller, "ShortLinkController", "Rest Controller", "Handles HTTP requests")
+    Component(service, "ShortLinkService", "Service", "Business logic for URL")
+    Component(generator, "ShortCodeGenerator", "Utility", "Generates unique short codes")
+    Component(repository, "ShortLinkRepository", "Repository", "Data access layer using JPA")
+}
+
+user -right-> controller : POST /short-links\nGET /{shortCode}
+
+controller --> service : Calls service methods
+service --> generator : Generates short codes
+service --> repository : CRUD operations
+repository --> database : JPA / Hibernate
+
+@enduml
