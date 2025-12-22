@@ -1,0 +1,49 @@
+databaseChangeLog:
+  - changeSet:
+      id: 001-create-short-url
+      author: artsobol
+
+      changes:
+        - createTable:
+              tableName: short_url
+              columns:
+                - column:
+                    name: id
+                    type: bigserial
+                    constraints:
+                      primaryKey: true
+                      primaryKeyName: pk_short_url
+                      nullable: false
+
+                - column:
+                    name: original_url
+                    type: varchar(255)
+                    constraints:
+                      nullable: false
+                      unique: true
+                      uniqueConstraintName: uq_original_url
+
+                - column:
+                    name: code
+                    type: varchar(6)
+                    constraints:
+                      nullable: false
+                      unique: true
+                      uniqueConstraintName: uq_code
+                      checkConstraint: "char_length(code) = 6"
+
+                - column:
+                    name: created_at
+                    type: timestamp with time zone
+                    defaultValueComputed: now()
+                    constraints:
+                      nullable: false
+      rollback:
+        - dropUniqueConstraint:
+            tableName: short_url
+            constraintName: uq_code
+        - dropUniqueConstraint:
+            tableName: short_url
+            constraintName: uq_original_url
+        - dropTable:
+            tableName: short_url
