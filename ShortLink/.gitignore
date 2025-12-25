@@ -6,9 +6,6 @@ target/
 *.ear
 *.log
 
-### === Maven wrapper ===
-.mvn/wrapper/maven-wrapper.jar
-
 ### === IntelliJ IDEA ===
 .idea/
 *.iml
