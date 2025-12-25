@@ -35,7 +35,7 @@ jobs:
       
       - name: Deploy
         run: |
-          cd $HOME/shortlink
+          cd "$HOME/shortlink"
           cp -f "${GITHUB_WORKSPACE}/docker-compose.yml" docker-compose.yml
           cp -f "${GITHUB_WORKSPACE}/Dockerfile" Dockerfile
-          docker compose --env-file .env up -d --build
+          docker-compose up -d --build
