@@ -15,6 +15,7 @@ jobs:
           distribution: temurin
           java-version: "21"
           cache: maven
+      - run: chmod +x mvnw
       - run: ./mvnw -B -ntp test
 
   deploy:
@@ -37,7 +38,6 @@ jobs:
       
       - name: Deploy
         run: |
-          cd "$HOME/shortlink"
-          cp -f "${GITHUB_WORKSPACE}/docker-compose.yml" docker-compose.yml
-          cp -f "${GITHUB_WORKSPACE}/Dockerfile" Dockerfile
-          docker-compose up -d --build
+          cd "${GITHUB_WORKSPACE}"
+          cp "$HOME/shortlink/.env" .env
+          docker-compose up -d --build --remove-orphans
