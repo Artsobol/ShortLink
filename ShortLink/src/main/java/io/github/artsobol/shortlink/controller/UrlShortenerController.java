@@ -3,6 +3,7 @@ package io.github.artsobol.shortlink.controller;
 import io.github.artsobol.shortlink.entity.dto.RequestOriginalUrl;
 import io.github.artsobol.shortlink.entity.dto.ResponseShortUrl;
 import io.github.artsobol.shortlink.service.api.UrlShortenerService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -17,7 +18,7 @@ public class UrlShortenerController {
     private final UrlShortenerService service;
 
     @PostMapping("/short-links")
-    public ResponseEntity<ResponseShortUrl> createShortUrl(@RequestBody RequestOriginalUrl request) {
+    public ResponseEntity<ResponseShortUrl> createShortUrl(@RequestBody @Valid RequestOriginalUrl request) {
         ResponseShortUrl response = service.createShortUrl(request);
         return ResponseEntity.ok(response);
     }

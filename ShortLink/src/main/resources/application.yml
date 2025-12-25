@@ -2,8 +2,8 @@ spring:
   application:
     name: ShortLink
   datasource:
-    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5498/shortlink_db}
-    username: ${POSTGRES_USER:postgres}
+    url: ${SPRING_DATASOURCE_URL}
+    username: ${POSTGRES_USER}
     password: ${POSTGRES_PASSWORD}
   liquibase:
     enabled: true
@@ -17,3 +17,8 @@ logging:
     liquibase: DEBUG
     org.springframework.boot.autoconfigure.liquibase: DEBUG
 
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
