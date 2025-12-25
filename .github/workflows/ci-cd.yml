@@ -40,4 +40,5 @@ jobs:
         run: |
           cd "${GITHUB_WORKSPACE}"
           cp "$HOME/shortlink/.env" .env
-          docker-compose up -d --build --remove-orphans
+          docker-compose down --remove-orphans
+          docker-compose up -d --build
