@@ -3,6 +3,7 @@ name: CI/CD
 on:
   push:
     branches: [ "main" ]
+  workflow_dispatch:
 
 jobs:
   test:
@@ -14,6 +15,7 @@ jobs:
           distribution: temurin
           java-version: "21"
           cache: maven
+      - run: chmod +x mvnw
       - run: ./mvnw -B -ntp test
 
   deploy:
@@ -24,18 +26,19 @@ jobs:
 
       - name: Write .env
         run: |
-          mkdir -p /opt/shortlink
-          cat > /opt/shortlink/.env << 'EOF'
+          mkdir -p $HOME/shortlink
+          cat > $HOME/shortlink/.env << 'EOF'
           POSTGRES_DB=${{ secrets.POSTGRES_DB }}
           POSTGRES_USER=${{ secrets.POSTGRES_USER }}
           POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}
+          POSTGRES_HOST_PORT=${{ secrets.POSTGRES_HOST_PORT }}
           SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/${{ secrets.POSTGRES_DB }}
           EOF
-          chmod 600 /opt/shortlink/.env
-
-      - name: Deploy (build on server)
+          chmod 600 $HOME/shortlink/.env
+      
+      - name: Deploy
         run: |
-          cd /opt/shortlink
-          cp -f "${GITHUB_WORKSPACE}/docker-compose.yml" docker-compose.yml
-          cp -f "${GITHUB_WORKSPACE}/Dockerfile" Dockerfile
-          docker compose --env-file .env up -d --build
+          cd "${GITHUB_WORKSPACE}"
+          cp "$HOME/shortlink/.env" .env
+          docker-compose down --remove-orphans
+          docker-compose up -d --build
