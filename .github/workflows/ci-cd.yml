@@ -1,0 +1,41 @@
+name: CI/CD
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+          cache: maven
+      - run: ./mvnw -B -ntp test
+
+  deploy:
+    needs: test
+    runs-on: self-hosted
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Write .env
+        run: |
+          mkdir -p /opt/shortlink
+          cat > /opt/shortlink/.env << 'EOF'
+          POSTGRES_DB=${{ secrets.POSTGRES_DB }}
+          POSTGRES_USER=${{ secrets.POSTGRES_USER }}
+          POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}
+          SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/${{ secrets.POSTGRES_DB }}
+          EOF
+          chmod 600 /opt/shortlink/.env
+
+      - name: Deploy (build on server)
+        run: |
+          cd /opt/shortlink
+          cp -f "${GITHUB_WORKSPACE}/docker-compose.yml" docker-compose.yml
+          cp -f "${GITHUB_WORKSPACE}/Dockerfile" Dockerfile
+          docker compose --env-file .env up -d --build
