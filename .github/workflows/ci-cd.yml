@@ -24,21 +24,21 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Write .env
+      - name: Write .env.prod
         run: |
           mkdir -p $HOME/shortlink
-          cat > $HOME/shortlink/.env << 'EOF'
+          cat > $HOME/shortlink/.env.prod << 'EOF'
           POSTGRES_DB=${{ secrets.POSTGRES_DB }}
           POSTGRES_USER=${{ secrets.POSTGRES_USER }}
           POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}
-          POSTGRES_HOST_PORT=${{ secrets.POSTGRES_HOST_PORT }}
-          SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/${{ secrets.POSTGRES_DB }}
+          APP_HOST_PORT=${{ secrets.APP_HOST_PORT }}
           EOF
-          chmod 600 $HOME/shortlink/.env
-      
+          chmod 600 $HOME/shortlink/.env.prod
+
       - name: Deploy
         run: |
           cd "${GITHUB_WORKSPACE}"
-          cp "$HOME/shortlink/.env" .env
-          docker-compose down --remove-orphans
-          docker-compose up -d --build
+          cp "$HOME/shortlink/.env.prod" .env.prod
+
+          docker-compose -f docker-compose.yml -f docker-compose.prod.yml down --remove-orphans
+          docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d --build
