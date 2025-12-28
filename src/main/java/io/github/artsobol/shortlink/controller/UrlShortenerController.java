@@ -2,6 +2,7 @@ package io.github.artsobol.shortlink.controller;
 
 import io.github.artsobol.shortlink.entity.dto.RequestOriginalUrl;
 import io.github.artsobol.shortlink.entity.dto.ResponseShortUrl;
+import io.github.artsobol.shortlink.exception.ErrorResponse;
 import io.github.artsobol.shortlink.service.api.UrlShortenerService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -64,8 +65,32 @@ public class UrlShortenerController {
                                            description = "Original url",
                                            schema = @Schema(type = "string", format = "uri"),
                                            example = "https://google.com")),
-            @ApiResponse(responseCode = "404", description = "Code not found"),
-            @ApiResponse(responseCode = "429", description = "Too many requests")
+            @ApiResponse(responseCode = "404",
+                         description = "Code not found",
+                         content = @Content(mediaType = "application/json",
+                                            schema = @Schema(implementation = ErrorResponse.class),
+                                            examples = @ExampleObject(name = "NotFound", value = """
+                                                                                                 {
+                                                                                                    "timestamp": "2025-12-28T12:15:30.123+03:00",
+                                                                                                      "status": 404,
+                                                                                                      "error": "Not Found",
+                                                                                                      "message": "Code not found",
+                                                                                                      "path": "/r/invalidCode"
+                                                                                                 }
+                                                                                                 """))),
+            @ApiResponse(responseCode = "429",
+                         description = "Too many requests",
+                         content = @Content(mediaType = "application/json",
+                                            schema = @Schema(implementation = ErrorResponse.class),
+                                            examples = @ExampleObject(name = "TooManyRequests", value = """
+                                                                                                        {
+                                                                                                         "timestamp": "2025-12-28T12:15:30.123+03:00",
+                                                                                                         "status": 429,
+                                                                                                         "error": "Too Many Request",
+                                                                                                         "message": "Rate limit exceeded",
+                                                                                                         "path": "/r/D7xlF1"
+                                                                                                        }
+                                                                                                        """)))
     })
     public ResponseEntity<Void> redirect(
             @Parameter(description = "Short code", example = "D7xlF1") @PathVariable("shortCode") String shortCode) {
