@@ -13,6 +13,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import static org.mockito.ArgumentMatchers.endsWith;
 import static org.mockito.Mockito.when;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -36,8 +37,8 @@ public class UrlShortenerControllerTest {
 
     @Test
     @SneakyThrows
-    @DisplayName("createShortUrl returns 200 with body")
-    void createShortUrl_returns200_withBody() {
+    @DisplayName("createShortUrl returns 201 with body")
+    void createShortUrl_returns201_withBody() {
         // given
         RequestOriginalUrl request = new RequestOriginalUrl(originalUrl);
         ResponseShortUrl response = new ResponseShortUrl(originalUrl, code);
@@ -48,7 +49,8 @@ public class UrlShortenerControllerTest {
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .characterEncoding("UTF-8")
                                 .content(objectMapper.writeValueAsString(request)))
-                .andExpect(status().isOk())
+                .andExpect(status().isCreated())
+                .andExpect(redirectedUrlPattern("**/r/" + code))
                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.originalUrl").value(originalUrl))
                 .andExpect(jsonPath("$.code").value(code));
@@ -67,15 +69,15 @@ public class UrlShortenerControllerTest {
 
     @Test
     @SneakyThrows
-    @DisplayName("getShortUrl redirects to original url when code exists")
-    void getShortUrl_redirectsToOriginalUrl_whenCodeExists() {
+    @DisplayName("redirect returns 302 and location header to original url when code exists")
+    void redirect_returns302_toOriginalUrl_whenCodeExists() {
         // given
         ResponseShortUrl response = new ResponseShortUrl(originalUrl, code);
         when(service.getOriginalUrl(code)).thenReturn(response);
 
         // when + then
-        mockMvc.perform(get("/" + code))
-                .andExpect(status().is3xxRedirection())
+        mockMvc.perform(get("/r/{shortCode}", code))
+                .andExpect(status().isFound())
                 .andExpect(redirectedUrl(originalUrl));
     }
 }

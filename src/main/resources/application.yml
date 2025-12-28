@@ -2,9 +2,9 @@ spring:
   application:
     name: ShortLink
   datasource:
-    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5498/shortlink_db}
-    username: ${POSTGRES_USER:postgres}
-    password: ${POSTGRES_PASSWORD:postgres}
+    url: ${SPRING_DATASOURCE_URL}
+    username: ${SPRING_DATASOURCE_USERNAME}
+    password: ${SPRING_DATASOURCE_PASSWORD}
   liquibase:
     enabled: true
     change-log: classpath:db/changelog/db.changelog-master.yaml
@@ -22,3 +22,9 @@ management:
     web:
       exposure:
         include: health
+
+springdoc:
+  api-docs:
+    enabled: true
+  swagger-ui:
+    enabled: true

@@ -11,4 +11,8 @@ public final class CreateUriUtils {
     public static URI buildRedirectUri(String path, String code) {
         return ServletUriComponentsBuilder.fromCurrentContextPath().path(path).buildAndExpand(code).toUri();
     }
+
+    public static URI buildOriginalUri(String originalUrl) {
+        return URI.create(originalUrl);
+    }
 }
