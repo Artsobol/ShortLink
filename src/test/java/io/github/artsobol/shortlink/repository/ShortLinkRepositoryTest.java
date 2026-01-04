@@ -1,6 +1,6 @@
 package io.github.artsobol.shortlink.repository;
 
-import io.github.artsobol.shortlink.entity.ShortUrl;
+import io.github.artsobol.shortlink.entity.ShortLink;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +21,7 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 @DataJpaTest
 @Testcontainers
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-public class UrlShortenerRepositoryTest {
+class ShortLinkRepositoryTest {
 
     @Container @SuppressWarnings("resource") static final PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>(
             "postgres:16-alpine").withDatabaseName("test_db").withUsername("test_user").withPassword("test_password");
@@ -35,7 +35,7 @@ public class UrlShortenerRepositoryTest {
         registry.add("spring.liquibase.enabled", () -> true);
     }
 
-    @Autowired private UrlShortenerRepository repository;
+    @Autowired private ShortLinkRepository repository;
 
     @Test
     @DisplayName("findByOriginalUrl returns entity when url exists")
@@ -43,10 +43,10 @@ public class UrlShortenerRepositoryTest {
         // given
         String originalUrl = "https://www.google.com";
         String code = "D3kX9a";
-        repository.save(ShortUrl.builder().originalUrl(originalUrl).code(code).build());
+        repository.save(ShortLink.builder().originalUrl(originalUrl).code(code).build());
 
         // when
-        Optional<ShortUrl> result = repository.findByOriginalUrl(originalUrl);
+        Optional<ShortLink> result = repository.findByOriginalUrl(originalUrl);
 
         // then
         assertThat(result).isPresent().hasValueSatisfying(shortUrl -> {
@@ -61,10 +61,10 @@ public class UrlShortenerRepositoryTest {
         // given
         String originalUrl = "https://www.google.com";
         String code = "D3kX9a";
-        repository.save(ShortUrl.builder().originalUrl(originalUrl).code(code).build());
+        repository.save(ShortLink.builder().originalUrl(originalUrl).code(code).build());
 
         // when
-        Optional<ShortUrl> result = repository.findByCode(code);
+        Optional<ShortLink> result = repository.findByCode(code);
 
         // then
         assertThat(result).isPresent().hasValueSatisfying(shortUrl -> {
@@ -76,24 +76,24 @@ public class UrlShortenerRepositoryTest {
     @Test
     @DisplayName("codeShouldBeUnique throw exception when code exists")
     void codeShouldBeUnique() {
-        repository.saveAndFlush(ShortUrl.builder().originalUrl("https://a.com").code("dup").build());
+        repository.saveAndFlush(ShortLink.builder().originalUrl("https://a.com").code("dup").build());
 
-        assertThatThrownBy(() -> repository.saveAndFlush(ShortUrl.builder()
-                                                                 .originalUrl("https://b.com")
-                                                                 .code("dup")
-                                                                 .build())).isInstanceOf(DataIntegrityViolationException.class)
-                                                                           .hasRootCauseInstanceOf(org.postgresql.util.PSQLException.class);
+        assertThatThrownBy(() -> repository.saveAndFlush(ShortLink.builder()
+                .originalUrl("https://b.com")
+                .code("dup")
+                .build())).isInstanceOf(DataIntegrityViolationException.class)
+                .hasRootCauseInstanceOf(org.postgresql.util.PSQLException.class);
     }
 
     @Test
     @DisplayName("urlShouldBeUnique throw exception when url exists")
     void urlShouldBeUnique() {
-        repository.saveAndFlush(ShortUrl.builder().originalUrl("https://a.com").code("Ffd2d").build());
+        repository.saveAndFlush(ShortLink.builder().originalUrl("https://a.com").code("Ffd2d").build());
 
-        assertThatThrownBy(() -> repository.saveAndFlush(ShortUrl.builder()
-                                                                 .originalUrl("https://a.com")
-                                                                 .code("Fasd32")
-                                                                 .build())).isInstanceOf(DataIntegrityViolationException.class)
-                                                                           .hasRootCauseInstanceOf(org.postgresql.util.PSQLException.class);
+        assertThatThrownBy(() -> repository.saveAndFlush(ShortLink.builder()
+                .originalUrl("https://a.com")
+                .code("Fasd32")
+                .build())).isInstanceOf(DataIntegrityViolationException.class)
+                .hasRootCauseInstanceOf(org.postgresql.util.PSQLException.class);
     }
 }

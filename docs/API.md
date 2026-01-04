@@ -17,7 +17,7 @@
 ```json
 {
   "shortCode": "abc123",
-  "shortUrl": "https://short.link/abc123"
+  "shortLink": "https://short.link/abc123"
 }
 ```
 

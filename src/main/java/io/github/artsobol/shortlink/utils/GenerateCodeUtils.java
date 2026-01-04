@@ -8,7 +8,8 @@ public final class GenerateCodeUtils {
     private static final SecureRandom RANDOM = new SecureRandom();
     private static final int LENGTH = 6;
 
-    private GenerateCodeUtils() {}
+    private GenerateCodeUtils() {
+    }
 
     public static String generateCode() {
         StringBuilder sb = new StringBuilder();

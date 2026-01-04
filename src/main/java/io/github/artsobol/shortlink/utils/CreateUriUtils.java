@@ -6,7 +6,8 @@ import java.net.URI;
 
 public final class CreateUriUtils {
 
-    private CreateUriUtils() {}
+    private CreateUriUtils() {
+    }
 
     public static URI buildRedirectUri(String path, String code) {
         return ServletUriComponentsBuilder.fromCurrentContextPath().path(path).buildAndExpand(code).toUri();

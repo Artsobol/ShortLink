@@ -1,8 +1,17 @@
 package io.github.artsobol.shortlink.entity;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.OffsetDateTime;
@@ -11,10 +20,10 @@ import java.time.OffsetDateTime;
 @Getter
 @Setter
 @Builder
-@Table(name = "short_url")
+@Table(name = "short_link")
 @NoArgsConstructor
 @AllArgsConstructor
-public class ShortUrl {
+public class ShortLink {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

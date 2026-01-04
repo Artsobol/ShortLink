@@ -1,9 +1,14 @@
 package io.github.artsobol.shortlink.advice;
 
-import io.github.artsobol.shortlink.exception.CodeExistsException;
+import io.github.artsobol.shortlink.exception.BaseException;
 import io.github.artsobol.shortlink.exception.ErrorResponse;
+import io.github.artsobol.shortlink.exception.ValidationErrorResponse;
+import io.github.artsobol.shortlink.exception.ValidationFieldError;
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -16,38 +21,76 @@ import java.util.List;
 
 @Slf4j
 @RestControllerAdvice
+@RequiredArgsConstructor
 public class CommonControllerAdvice {
 
-    @ExceptionHandler(CodeExistsException.class)
-    public ResponseEntity<ErrorResponse> handleCodeExistsException(CodeExistsException e, HttpServletRequest request) {
-        ErrorResponse response = new ErrorResponse(
-                OffsetDateTime.now(ZoneOffset.UTC),
-                HttpStatus.NOT_FOUND.value(),
-                HttpStatus.NOT_FOUND.getReasonPhrase(),
-                e.getMessage(),
-                request.getRequestURI(),
-                null
-        );
-
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
-    }
+    private final MessageSource messageSource;
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ErrorResponse> handleMethodArgumentNotValidException(MethodArgumentNotValidException e, HttpServletRequest request) {
+    public ResponseEntity<ValidationErrorResponse> handleMethodArgumentNotValid(
+            MethodArgumentNotValidException ex,
+            HttpServletRequest request
+    ) {
         HttpStatus status = HttpStatus.BAD_REQUEST;
 
-        List<ErrorResponse.Violation> details = e.getBindingResult().getFieldErrors().stream().map(error -> new ErrorResponse.Violation(
-                error.getField(), error.getDefaultMessage()
-        )).toList();
+        List<ValidationFieldError> errors = ex.getBindingResult()
+                .getFieldErrors()
+                .stream()
+                .map(err -> new ValidationFieldError(err.getField(), resolveValidationMessage(err)))
+                .toList();
+
+        String message = createMessage("validation.error", null);
+
+        ValidationErrorResponse response = new ValidationErrorResponse(
+                OffsetDateTime.now(ZoneOffset.UTC),
+                status.value(),
+                status.getReasonPhrase(),
+                message,
+                request.getRequestURI(),
+                errors
+        );
+
+        return ResponseEntity.status(status).body(response);
+    }
+
+    @ExceptionHandler(BaseException.class)
+    public ResponseEntity<ErrorResponse> handleBaseException(BaseException ex, HttpServletRequest request) {
+        HttpStatus status = ex.getStatus();
+        String message = createMessage(ex.getMessageKey(), ex.getMessageArgs());
+
         ErrorResponse response = new ErrorResponse(
                 OffsetDateTime.now(ZoneOffset.UTC),
                 status.value(),
                 status.getReasonPhrase(),
-                "Request validation failed",
-                request.getRequestURI(),
-                details
+                ex.getErrorCode(),
+                message,
+                request.getRequestURI()
         );
 
         return ResponseEntity.status(status).body(response);
+    }
+
+    private String resolveValidationMessage(org.springframework.validation.FieldError err) {
+        String defaultMessage = err.getDefaultMessage();
+        if (defaultMessage == null || defaultMessage.isBlank()) {
+            return "Validation error";
+        }
+
+        try {
+            return messageSource.getMessage(defaultMessage, err.getArguments(), LocaleContextHolder.getLocale());
+        } catch (Exception ignored) {
+            return defaultMessage;
+        }
+    }
+
+    private String createMessage(String key, Object[] args) {
+        try {
+            var locale = LocaleContextHolder.getLocale();
+            log.warn("Resolving message: key={}, locale={}, args={}", key, locale, args);
+            return messageSource.getMessage(key, args, locale);
+        } catch (Exception e) {
+            log.error("Cannot resolve message key={}", key, e);
+            return "Unexpected error";
+        }
     }
 }

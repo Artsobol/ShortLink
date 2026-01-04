@@ -1,17 +1,17 @@
 package io.github.artsobol.shortlink.repository;
 
-import io.github.artsobol.shortlink.entity.ShortUrl;
+import io.github.artsobol.shortlink.entity.ShortLink;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 
 @Repository
-public interface UrlShortenerRepository extends JpaRepository<ShortUrl, Long> {
+public interface ShortLinkRepository extends JpaRepository<ShortLink, Long> {
 
-    Optional<ShortUrl> findByOriginalUrl(String originalUrl);
+    Optional<ShortLink> findByOriginalUrl(String originalUrl);
 
-    Optional<ShortUrl> findByCode(String code);
+    Optional<ShortLink> findByCode(String code);
 
     boolean existsByCode(String code);
 }

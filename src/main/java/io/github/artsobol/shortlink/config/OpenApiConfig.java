@@ -6,4 +6,5 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 @OpenAPIDefinition(info = @Info(title = "ShortLink API", version = "1.0"))
-public class OpenApiConfig {}
+public class OpenApiConfig {
+}
