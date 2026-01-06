@@ -20,7 +20,7 @@ import java.time.OffsetDateTime;
 @Getter
 @Setter
 @Builder
-@Table(name = "short_link")
+@Table(name = "short_url")
 @NoArgsConstructor
 @AllArgsConstructor
 public class ShortLink {
