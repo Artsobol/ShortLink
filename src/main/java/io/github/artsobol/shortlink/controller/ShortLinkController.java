@@ -6,6 +6,7 @@ import io.github.artsobol.shortlink.exception.ErrorResponse;
 import io.github.artsobol.shortlink.service.api.ShortLinkService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.headers.Header;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
@@ -40,12 +41,13 @@ public class ShortLinkController {
                     schema = @Schema(type = "string", format = "uri"), example = "https://api.example.com/r/D6xg1F"))
     @ApiResponse(responseCode = "400", description = "Invalid url")
     @ApiResponse(responseCode = "429", description = "Too many requests")
-
-    @Operation(summary = "Create short link",
-            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(required = true,
-                    description = "Original URL to shorten",
-                    content = @Content(schema = @Schema(implementation = CreateShortLinkRequest.class),
-                            examples = @ExampleObject(value = "{\"originalUrl\":\"https://google.com\"}"))))
+    @Operation(summary = "Create short link", parameters = {
+            @Parameter(name = "Accept-Language", in = ParameterIn.HEADER,
+                    description = "Preferred response language for localized error messages", example = "ru-RU")
+    }, requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(required = true,
+            description = "Original URL to shorten",
+            content = @Content(schema = @Schema(implementation = CreateShortLinkRequest.class),
+                    examples = @ExampleObject(value = "{\"originalUrl\":\"https://google.com\"}"))))
     public ResponseEntity<ShortLinkResponse> createShortUrl(
             @RequestBody @Valid CreateShortLinkRequest request
     ) {
@@ -56,7 +58,10 @@ public class ShortLinkController {
     }
 
     @GetMapping("/r/{shortCode}")
-    @Operation(summary = "Redirect by short code", description = "Redirect to original url")
+    @Operation(summary = "Redirect by short code", parameters = {
+            @Parameter(name = "Accept-Language", in = ParameterIn.HEADER,
+                    description = "Preferred response language for localized error messages", example = "ru-RU")
+    }, description = "Redirect to original url")
     @ApiResponse(responseCode = "302", description = "Redirect to original url",
             headers = @Header(name = "Location", description = "Original url",
                     schema = @Schema(type = "string", format = "uri"), example = "https://google.com"))
