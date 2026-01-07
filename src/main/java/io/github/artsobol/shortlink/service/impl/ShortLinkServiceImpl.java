@@ -29,10 +29,16 @@ public class ShortLinkServiceImpl implements ShortLinkService {
     @Transactional
     public ShortLinkResponse create(CreateShortLinkRequest request) {
         String originalUrl = request.originalUrl();
+
+        log.debug("Creating shortLink for originalUrl={}", originalUrl);
+
         return repository.findByOriginalUrl(originalUrl).map(mapper::toDto).orElseGet(() -> {
             try {
-                return mapper.toDto(saveCode(originalUrl));
+                ShortLinkResponse response = mapper.toDto(saveCode(originalUrl));
+                log.info("ShortLink created for originalUrl={} with code={}", originalUrl, response.code());
+                return response;
             } catch (DataIntegrityViolationException e) {
+                log.debug("Cannot create shortLink for originalUrl={}", originalUrl);
                 return repository.findByOriginalUrl(originalUrl).map(mapper::toDto).orElseThrow(() -> e);
             }
         });
@@ -48,13 +54,15 @@ public class ShortLinkServiceImpl implements ShortLinkService {
             String code = GenerateCodeUtils.generateCode();
             ShortLink shortLink = ShortLink.builder().code(code).originalUrl(originalUrl).build();
             try {
+                log.debug("Saving shortLink (code={}, originalUrl={})", code, originalUrl);
                 return repository.save(shortLink);
             } catch (DataIntegrityViolationException e) {
                 log.debug(
-                        "Data integrity violation while saving shortLink (code={}, originalUrl={})",
+                        "Collision detected when saving shortLink (code={}, originalUrl={}, attempt={}/{})",
                         shortLink.getCode(),
                         originalUrl,
-                        e
+                        i,
+                        MAX_RETRIES
                 );
             }
         }
