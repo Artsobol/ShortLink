@@ -13,7 +13,10 @@ RUN ./mvnw -B -ntp -DskipTests package
 FROM eclipse-temurin:21-jre
 WORKDIR /app
 
-RUN addgroup --system app && adduser --system --ingroup app app
+RUN addgroup --system app && adduser --system --ingroup app app \
+    && mkdir -p /app/logs \
+    && chown -R app:app /app
+
 USER app
 
 COPY --from=builder /app/target/app.jar /app/app.jar
