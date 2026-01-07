@@ -11,6 +11,8 @@ import io.github.artsobol.shortlink.service.api.ShortLinkService;
 import io.github.artsobol.shortlink.utils.GenerateCodeUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,6 +29,7 @@ public class ShortLinkServiceImpl implements ShortLinkService {
 
     @Override
     @Transactional
+    @CachePut(cacheNames = "shortLink", key = "#result.code()", unless = "#result == null")
     public ShortLinkResponse create(CreateShortLinkRequest request) {
         String originalUrl = request.originalUrl();
 
@@ -45,12 +48,13 @@ public class ShortLinkServiceImpl implements ShortLinkService {
     }
 
     @Override
+    @Cacheable(cacheNames = "shortLink", key = "#code")
     public ShortLinkResponse resolve(String code) {
         return repository.findByCode(code).map(mapper::toDto).orElseThrow(() -> new CodeNotFoundException(code));
     }
 
     private ShortLink saveCode(String originalUrl) {
-        for (int i = 0; i < MAX_RETRIES; i++) {
+        for (int retry = 0; retry < MAX_RETRIES; retry++) {
             String code = GenerateCodeUtils.generateCode();
             ShortLink shortLink = ShortLink.builder().code(code).originalUrl(originalUrl).build();
             try {
@@ -61,7 +65,7 @@ public class ShortLinkServiceImpl implements ShortLinkService {
                         "Collision detected when saving shortLink (code={}, originalUrl={}, attempt={}/{})",
                         shortLink.getCode(),
                         originalUrl,
-                        i,
+                        retry + 1,
                         MAX_RETRIES
                 );
             }
