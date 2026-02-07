@@ -19,8 +19,6 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.anyString;
-import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -43,7 +41,6 @@ class ShortLinkServiceTest {
 
         // when
         when(urlRepository.findByOriginalUrl(originalUrl)).thenReturn(Optional.empty());
-        when(urlRepository.existsByCode(anyString())).thenReturn(false);
         when(urlRepository.save(any(ShortLink.class))).thenReturn(shortLink);
         when(shortLinkMapper.toDto(any(ShortLink.class))).thenAnswer(inv -> {
             ShortLink s = inv.getArgument(0);
@@ -56,7 +53,6 @@ class ShortLinkServiceTest {
         assertEquals(originalUrl, response.originalUrl());
         verify(urlRepository).findByOriginalUrl(originalUrl);
         verify(urlRepository).save(any(ShortLink.class));
-        verify(urlRepository, atLeastOnce()).existsByCode(anyString());
     }
 
     @Test

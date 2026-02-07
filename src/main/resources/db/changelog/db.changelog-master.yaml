@@ -1,3 +1,5 @@
 databaseChangeLog:
   - include:
       file: db/changelog/changeset/1.0/001-create-short-url.yaml
+  - include:
+      file: db/changelog/changeset/1.0/002-create-users.yaml
