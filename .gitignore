@@ -28,3 +28,7 @@ docker-data/
 
 ### === Redis ===
 redis-data/
+
+src/main/resources/keystore.p12
+*.p12
+*.jks

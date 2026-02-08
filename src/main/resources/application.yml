@@ -37,6 +37,7 @@ management:
 springdoc:
   api-docs:
     enabled: true
+
   swagger-ui:
     enabled: true
 
@@ -45,3 +46,14 @@ app:
     basename: classpath:i18n/messages/messages,classpath:i18n/errors/errors,classpath:i18n/validations/validations
     encoding: UTF-8
     fallback-to-system-locale: false
+  jwt:
+    secret: ${JWT_SECRET}
+  security:
+    password-encoder: argon2
+    refresh:
+      ttl: ${REFRESH_TTL}
+      pepper: ${REFRESH_PEPPER}
+  management:
+    auth:
+      user: ${MANAGEMENT_USER}
+      password: ${MANAGEMENT_PASSWORD}

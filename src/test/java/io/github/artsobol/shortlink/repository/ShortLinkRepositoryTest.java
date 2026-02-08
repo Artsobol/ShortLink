@@ -1,11 +1,12 @@
 package io.github.artsobol.shortlink.repository;
 
-import io.github.artsobol.shortlink.entity.ShortLink;
+import io.github.artsobol.shortlink.infrastructure.persistence.jpa.entity.ShortLink;
+import io.github.artsobol.shortlink.infrastructure.persistence.jpa.repository.ShortLinkRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
+import org.springframework.boot.jdbc.test.autoconfigure.AutoConfigureTestDatabase;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
@@ -23,7 +24,9 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 class ShortLinkRepositoryTest {
 
-    @Container @SuppressWarnings("resource") static final PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>(
+    @Container
+    @SuppressWarnings("resource")
+    static final PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>(
             "postgres:16-alpine").withDatabaseName("test_db").withUsername("test_user").withPassword("test_password");
 
     @DynamicPropertySource

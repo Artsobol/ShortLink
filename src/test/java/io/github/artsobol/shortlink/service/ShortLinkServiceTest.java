@@ -1,12 +1,12 @@
 package io.github.artsobol.shortlink.service;
 
-import io.github.artsobol.shortlink.entity.ShortLink;
-import io.github.artsobol.shortlink.entity.dto.CreateShortLinkRequest;
-import io.github.artsobol.shortlink.entity.dto.ShortLinkResponse;
-import io.github.artsobol.shortlink.exception.CodeNotFoundException;
-import io.github.artsobol.shortlink.mapper.ShortLinkMapper;
-import io.github.artsobol.shortlink.repository.ShortLinkRepository;
-import io.github.artsobol.shortlink.service.impl.ShortLinkServiceImpl;
+import io.github.artsobol.shortlink.api.dto.CreateShortLinkRequest;
+import io.github.artsobol.shortlink.api.dto.ShortLinkResponse;
+import io.github.artsobol.shortlink.application.impl.ShortLinkServiceImpl;
+import io.github.artsobol.shortlink.exception.domain.shortlink.CodeNotFoundException;
+import io.github.artsobol.shortlink.infrastructure.persistence.jpa.entity.ShortLink;
+import io.github.artsobol.shortlink.infrastructure.persistence.jpa.repository.ShortLinkRepository;
+import io.github.artsobol.shortlink.infrastructure.persistence.mapper.ShortLinkMapper;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -19,8 +19,6 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.anyString;
-import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -43,7 +41,6 @@ class ShortLinkServiceTest {
 
         // when
         when(urlRepository.findByOriginalUrl(originalUrl)).thenReturn(Optional.empty());
-        when(urlRepository.existsByCode(anyString())).thenReturn(false);
         when(urlRepository.save(any(ShortLink.class))).thenReturn(shortLink);
         when(shortLinkMapper.toDto(any(ShortLink.class))).thenAnswer(inv -> {
             ShortLink s = inv.getArgument(0);
@@ -56,7 +53,6 @@ class ShortLinkServiceTest {
         assertEquals(originalUrl, response.originalUrl());
         verify(urlRepository).findByOriginalUrl(originalUrl);
         verify(urlRepository).save(any(ShortLink.class));
-        verify(urlRepository, atLeastOnce()).existsByCode(anyString());
     }
 
     @Test

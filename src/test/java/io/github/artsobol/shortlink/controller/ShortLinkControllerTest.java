@@ -1,17 +1,19 @@
 package io.github.artsobol.shortlink.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import io.github.artsobol.shortlink.entity.dto.CreateShortLinkRequest;
-import io.github.artsobol.shortlink.entity.dto.ShortLinkResponse;
-import io.github.artsobol.shortlink.service.api.ShortLinkService;
+import io.github.artsobol.shortlink.api.controller.ShortLinkController;
+import io.github.artsobol.shortlink.api.dto.CreateShortLinkRequest;
+import io.github.artsobol.shortlink.api.dto.ShortLinkResponse;
+import io.github.artsobol.shortlink.application.service.ShortLinkService;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
+import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
+import tools.jackson.databind.ObjectMapper;
 
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -23,6 +25,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(ShortLinkController.class)
+@AutoConfigureMockMvc(addFilters = false)
 class ShortLinkControllerTest {
 
     @Autowired
