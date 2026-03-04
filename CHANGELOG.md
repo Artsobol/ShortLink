@@ -44,3 +44,20 @@
 - Fixed `CacheConfig` to be compatible with Spring Boot 4/Jackson 3 by injecting `ObjectMapper` into
   `GenericJacksonJsonRedisSerializer`.
 - Updated and fixed existing repository and service tests to align with the new data structure.
+
+## [1.1.1] - 2026-03-04
+
+### Changed
+
+- Updated project dependencies to newer patch versions.
+- **Security Configuration:**
+    - Removed `@Component` from `JwtTokenProvider` and `JwtAuthenticationFilter`.
+    - Registered `JwtTokenProvider` and `JwtAuthenticationFilter` explicitly in `SecurityConfig`.
+- **Architecture Refactoring:**
+    - Reorganized package structure for clearer module boundaries (`api`, `infrastructure`, `exception`, feature
+      modules).
+
+### Fixed
+
+- **Tests:**
+    - Updated repository tests to run Liquibase migrations when using Testcontainers.

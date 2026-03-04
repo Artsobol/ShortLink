@@ -1,12 +1,12 @@
 package io.github.artsobol.shortlink.service;
 
-import io.github.artsobol.shortlink.api.dto.CreateShortLinkRequest;
-import io.github.artsobol.shortlink.api.dto.ShortLinkResponse;
-import io.github.artsobol.shortlink.application.impl.ShortLinkServiceImpl;
-import io.github.artsobol.shortlink.exception.domain.shortlink.CodeNotFoundException;
-import io.github.artsobol.shortlink.infrastructure.persistence.jpa.entity.ShortLink;
-import io.github.artsobol.shortlink.infrastructure.persistence.jpa.repository.ShortLinkRepository;
-import io.github.artsobol.shortlink.infrastructure.persistence.mapper.ShortLinkMapper;
+import io.github.artsobol.shortlink.exception.domain.CodeNotFoundException;
+import io.github.artsobol.shortlink.shortlink.dto.CreateShortLinkRequest;
+import io.github.artsobol.shortlink.shortlink.dto.ShortLinkResponse;
+import io.github.artsobol.shortlink.shortlink.entity.ShortLink;
+import io.github.artsobol.shortlink.shortlink.repository.ShortLinkRepository;
+import io.github.artsobol.shortlink.shortlink.service.ShortLinkServiceImpl;
+import io.github.artsobol.shortlink.user.mapper.ShortLinkMapper;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

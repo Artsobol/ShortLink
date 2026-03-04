@@ -1,12 +1,14 @@
 package io.github.artsobol.shortlink.repository;
 
-import io.github.artsobol.shortlink.infrastructure.persistence.jpa.entity.ShortLink;
-import io.github.artsobol.shortlink.infrastructure.persistence.jpa.repository.ShortLinkRepository;
+import io.github.artsobol.shortlink.shortlink.entity.ShortLink;
+import io.github.artsobol.shortlink.shortlink.repository.ShortLinkRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
 import org.springframework.boot.jdbc.test.autoconfigure.AutoConfigureTestDatabase;
+import org.springframework.boot.liquibase.autoconfigure.LiquibaseAutoConfiguration;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
@@ -22,19 +24,19 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 @DataJpaTest
 @Testcontainers
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
+@ImportAutoConfiguration(LiquibaseAutoConfiguration.class)
 class ShortLinkRepositoryTest {
 
     @Container
     @SuppressWarnings("resource")
     static final PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>(
-            "postgres:16-alpine").withDatabaseName("test_db").withUsername("test_user").withPassword("test_password");
+            "postgres:18-alpine").withDatabaseName("test_db").withUsername("test_user").withPassword("test_password");
 
     @DynamicPropertySource
     static void properties(DynamicPropertyRegistry registry) {
         registry.add("spring.datasource.url", postgres::getJdbcUrl);
         registry.add("spring.datasource.username", postgres::getUsername);
         registry.add("spring.datasource.password", postgres::getPassword);
-
         registry.add("spring.liquibase.enabled", () -> true);
     }
 

@@ -1,13 +1,15 @@
 package io.github.artsobol.shortlink.controller;
 
-import io.github.artsobol.shortlink.api.controller.ShortLinkController;
-import io.github.artsobol.shortlink.api.dto.CreateShortLinkRequest;
-import io.github.artsobol.shortlink.api.dto.ShortLinkResponse;
-import io.github.artsobol.shortlink.application.service.ShortLinkService;
+import io.github.artsobol.shortlink.shortlink.dto.CreateShortLinkRequest;
+import io.github.artsobol.shortlink.shortlink.dto.ShortLinkResponse;
+import io.github.artsobol.shortlink.shortlink.service.ShortLinkService;
+import io.github.artsobol.shortlink.shortlink.web.ShortLinkController;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
+import org.springframework.boot.security.autoconfigure.SecurityAutoConfiguration;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.http.MediaType;
@@ -26,6 +28,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @WebMvcTest(ShortLinkController.class)
 @AutoConfigureMockMvc(addFilters = false)
+@ImportAutoConfiguration(exclude = SecurityAutoConfiguration.class)
 class ShortLinkControllerTest {
 
     @Autowired
